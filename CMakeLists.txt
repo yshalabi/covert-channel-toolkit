@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8.11)
 project (covert-channels)
-add_subdirectory (misc/libs)
+add_subdirectory (misc/cc-libs)
 add_subdirectory (channels/pp-l1d)
 add_subdirectory (channels/drng)
