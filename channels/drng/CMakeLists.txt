@@ -1,0 +1,7 @@
+add_executable (cc_drng drng.cpp)
+SET(CMAKE_CXX_FLAGS -pthread)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set_source_files_properties(drng.cpp PROPERTIES COMPILE_FLAGS -m32)
+set_source_files_properties(drng.cpp PROPERTIES COMPILE_FLAGS -pthread)
+set_source_files_properties(drng.cpp PROPERTIES COMPILE_FLAGS "-mrdseed -pthread")
