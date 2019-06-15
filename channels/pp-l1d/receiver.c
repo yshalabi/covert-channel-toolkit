@@ -17,6 +17,7 @@
 #include <string.h>
 #include "l1.h"
 #include "low.h"
+#include "crc16.h"
 /*
  * Detects a bit by repeatedly measuring the access time of the addresses in the
  * probing set and counting the number of misses for the clock length of state->interval.
@@ -31,113 +32,14 @@ typedef struct __attribute__((__packed__)) {
 } cc_payload;
 #define THRESHOLD_ONE 130
 #define L1_HIT 74
-void fill_packet(char * p, uint16_t * set_cycles, int * set_map)
-{
-    char payload[8] = {0,0,0,0,0,0,0,0};
-    for(int i =0; i < 64; i++)
-    {
-        int set = set_map[i];
-        int idx = (set/8);
-        int bit = (set%8);
-        int ones = 0;
-        for(int s = 0; s < 256; s++){
-            int sample = s*64 + i;
-            if(set_cycles[sample] > L1_HIT) {
-                ones++;
-            }
-        }
-        if(ones > THRESHOLD_ONE)
-            payload[idx] |= (1<<bit); 
-    }
-    if(payload[0] == 128 || payload[1] == 128)
-        printf("good transmission.\n");
-    if(payload[3] == 'z' || payload[4] == 'z')
-        printf("good transmission.\n");
-    memcpy((void*)p, (void*)payload, 8);
-    return;
-}
 
-bool is_valid(char * p) 
+bool is_valid_packet(char * p) 
 {
-
-    char num1 = p[0];
-    char num2 = p[1];
-    char num3 = p[2];
-    char pl[2] = {0,0};
-    for(int c = 0; c < 2; c++) {
-        for(int b = 0; b < 4; b++) {
-            int ones = 0;
-            for(int i = 0; i < 3; i++) {
-                if(p[c*3 + i] & (1<<b))
-                    ones++;
-            }
-            if(ones >=2)
-                pl[c] |= (1<<b);
-        }
-    }
-    unsigned char ecc1 = p[6]; 
-    unsigned char ECC   = pl[0] ^ pl[1] ^ 0xff; 
-    unsigned char ecc2 = p[7];
-    //unsigned int x = (ecc1 << 8) | ecc2;
-    char s = 'z';
-    char n = 128;
-    char e = 0xff ^ s ^ n;
-    char act[8] = {n,n,n,s,s,s,e,e};
-    printf("[");
+    uint16_t crc = crc16_ccitt_init();
     for(int i =0; i < 8; i++)
-    {
-        unsigned char c = p[i];
-        unsigned char exp = act[i];
-        unsigned int x = (unsigned int) c;
-        unsigned int x2 = (unsigned int) exp;
-        printf("%x (%x)",x, x2);
-        if(i != 7) printf(",");
-    }
-    printf("] -- ");
-    printf("ECC: %x\n", ECC);
-    return (ecc1 == ECC) || (ecc2 == ECC);
-}
-
-void dump_res(uint16_t* res, int * map) 
-{
-    int results[64];
-    for(int i = 0; i < 64; i++){
-        int set = map[i];
-        int cyc = res[i];
-        results[set] = cyc;
-    }
-    int set = 0;
-    printf("-----------");
-    for(int i = 0; i < 8; i++)
-    {
-        char x = 0;
-        for(int j = 0; j < 8; j++)
-        {
-            int ones = 0;
-            int set_idx = set++;
-            for(int s = 0; s < 256; s++)
-            {
-                int sample_offset = s*64;
-                if(res[map[set_idx] + sample_offset] > L1_HIT)
-                    ones++;
-            }
-
-            if(ones > THRESHOLD_ONE)
-                x |= (1<<j);
-        }
-
-        if(i == 0){
-            uint16_t num = (uint16_t) x;
-            printf("[%d,",x);
-        }
-        if(i >= 1 && i < 7)
-            printf("%c,",x);
-        if(i == 7){
-            uint16_t num = (uint16_t) x;
-            printf("%d]",x);
-        }
-    }
-    printf("------\n");
+        crc = crc16_ccitt_update(p[i], crc);
+    crc = crc16_ccitt_finalize(crc);
+    return (crc == 0);
 }
 
 #define SYNC_DELAY_FACTOR 28
@@ -145,16 +47,16 @@ void dump_res(uint16_t* res, int * map)
 
 void synchronize()
 {
-    uint64_t mask = (1 << 44)-1; 
+    uint64_t mask = (((uint64_t) 1) << 44)-1; 
     while(rdtscp() & mask > 0x1000)
         ;
 }
 
 int set_timings[64][256];
-int set_threshold[64];
-char payload[8];
-void measure_thresholds(uint16_t * results, int * rmap)
+void measure_thresholds(uint16_t * results, int * rmap, char * dst)
 {
+    char payload[8] = {0,0,0,0,0,0,0,0};
+    int set_threshold[64];
     for(int i = 0; i < 64; i++)
     {
         for(int j = 0; j < 256; j++) set_timings[i][j] = 0;
@@ -174,21 +76,30 @@ void measure_thresholds(uint16_t * results, int * rmap)
             break;
         }
     }
+    int set = 0;
     for(int c = 0; c < 8; c++){
         payload[c] = 0;
         for(int b = 0; b < 8; b++) {
             int i = c*8 + b;
-            if(set_threshold[i] > 100)
+            //printf("SET %d = %d\n", set++, set_threshold[i]);
+            if(set_threshold[i] > 120)
                 payload[c] |= (1<<b);
         }
     }
+    dst[0] = payload[0];
+    dst[1] = payload[1];
+    dst[2] = payload[2];
+    dst[3] = payload[3];
+    dst[4] = payload[4];
+    dst[5] = payload[5];
+    dst[6] = payload[6];
+    dst[7] = payload[7];
 }
 
 int main(int argc, char **argv)
 {
     char msg[7];
     msg[6] = 0;
-    char packet[8] = {0,0,0,0,0,0,0,0};
     uint64_t next_period;
     int i;
     l1pp_t l1 = l1_prepare();
@@ -204,49 +115,39 @@ int main(int argc, char **argv)
     uint16_t *results = calloc(samples * nsets, sizeof(uint16_t));
     for (int i = 0; i < samples * nsets; i+= 4096/sizeof(uint16_t))
         results[i] = 1;
-    //for(int i =0; i < nsets; i++) res[i] = 1; 
-  
-    //delayloop(3000000000U);
-    //l1_repeatedprobe(l1, samples, res, 0);
-   // dump_res(res,map);
-   // return 0;
 
+    int next_msg = 0;
+    uint16_t last_msg_num = 0xFFFF;
+    char buf[128];
+    char * pos = buf;
+    printf("\nMsg: ");
     while(1) {
 
+        char packet[8] = {0,0,0,0,0,0,0,0};
         synchronize();
         for(int i = 0; i < 128; i++)
         {
             uint16_t * res = results + nsets*i*2;
-            //prime
             l1_probe(l1, res);
             res = results + nsets*(2*i) + nsets;
             l1_bprobe(l1, res);
         }
 
-        measure_thresholds(results,rmap);
-        for(int i =0; i < 8; i++) printf("-%c-",payload[i]);
-        printf("\n");
+        measure_thresholds(results,rmap, packet);
         
-        for(int i =0; i < 1000*1000*10; i++)
-            asm("pause");
-        
-        //Fill the packet
-        fill_packet(&packet, results, rmap);
-        //if valid output
-        if(is_valid(&packet) == false){
-            continue;
-        } else {
+        if(is_valid_packet(packet) == false){
             sched_yield();
+            continue;
+        } 
+        uint16_t msg_num = (uint16_t) packet[0];
+        if(msg_num == last_msg_num)
+            continue;
+        last_msg_num = msg_num;
+        for(int i = 2; i <6; i++ ) {
+            if(packet[i] == 0)
+                printf("\nMsg: ");
+            printf("%c",packet[i]);
         }
-        dump_res(results,rmap);
-        printf("VALID TRANSMISSION\n");
-        //print contents
-        char * payload_msg = packet + 1;
-        for(i =0; i < 6; i++)
-            msg[i] = payload_msg[i];
-        memset(&packet,0,8);
     }
     return 0;
 }
-
-
