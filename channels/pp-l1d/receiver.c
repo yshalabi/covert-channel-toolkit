@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
     int next_msg = 0;
     uint16_t last_packet_num = 0xFFFF;
-    char buf[128];
+    char buf[1024];
     char * pos = buf;
     while(1) {
 
@@ -132,8 +132,8 @@ int main(int argc, char **argv)
                 pos[0] = 0;
                 pos = buf;
                 //Print buffer contents
-                printf("Msg: %s\n", pos);
-                memset(buf,0,128);
+                printf("%s\n", pos);
+                memset(buf,0,1024);
                 break;
             } else {
                 *pos++ = packet[i];

@@ -70,10 +70,8 @@ int main(int argc, char **argv)
     uint32_t msg_num = 0;
     setbuf(stdout, NULL);
 
-    printf("Please type a message (exit to stop).\n");
     while (1) {
         // Get a message to send from the user
-        printf("\n< ");
         char text_buf[128];
         fgets(text_buf, sizeof(text_buf), stdin);
 
@@ -103,12 +101,9 @@ int main(int argc, char **argv)
                 //Add packet number and CRC information to packet
                 finalize_packet(packet, msg_num++);
                 
-
-                printf("\n------> sending packet %d/%d....",msg_num-first_msg, num_packets);
                 for(int r = 0; r < SPAM_COUNT; r++) {
                     transmit(packet);
                 }
-                printf("packet sent!");
                 sched_yield();
             }
         }
