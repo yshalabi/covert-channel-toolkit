@@ -109,6 +109,7 @@ int main(int argc, char **argv)
                     transmit(packet);
                 }
                 printf("packet sent!");
+                sched_yield();
             }
         }
     }

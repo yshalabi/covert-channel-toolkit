@@ -120,8 +120,10 @@ int main(int argc, char **argv)
 
         if(crc_is_valid && is_new_packet)
             last_packet_num = packet_num;
-        else
+        else {
+            sched_yield();
             continue;
+        }
 
         //Move the packet contents into the buffer
         for(int i = FIRST_CHAR_INDEX; i < LAST_CHAR_INDEX; i++ ) {
