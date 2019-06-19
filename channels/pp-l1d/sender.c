@@ -18,6 +18,7 @@
 #include "l1.h"
 #include "low.h"
 #include "crc16.h"
+#define SPAM_COUNT 1250
 static volatile char __attribute__((aligned(32768))) buffer[4096*8];
 
 void transmit(char * p)
@@ -44,15 +45,6 @@ void transmit(char * p)
     sleep(1);
     printf("\n");*/
 }
-#define SYNC_DELAY_FACTOR 36
-#define NEXT_PERIOD_BOUNDARY (1<<(SYNC_DELAY_FACTOR+1))
-
-void synchronize()
-{
-    uint64_t mask = ((uint64_t) 1 << 44)-1; 
-    while(rdtscp() & mask > 0x1000)
-        ;
-}
 
 uint32_t finalize_packet(char * p, uint32_t packet_num)
 {
@@ -75,32 +67,27 @@ uint32_t finalize_packet(char * p, uint32_t packet_num)
 
 int main(int argc, char **argv)
 {
-    char s = 'z';
-    s = 'z';
-    char n = 128;
-    n = 'z';
-    char ecc = 0xff ^ s ^ n;
-    ecc = 'z';
-    int sending = 1;
-    uint64_t next_period;
     uint32_t msg_num = 0;
+    setbuf(stdout, NULL);
 
     printf("Please type a message (exit to stop).\n");
-    while (sending) {
-
+    while (1) {
         // Get a message to send from the user
-        printf("< ");
+        printf("\n< ");
         char text_buf[128];
         fgets(text_buf, sizeof(text_buf), stdin);
 
         if (strcmp(text_buf, "exit\n") == 0) {
-            sending = 0;
+            return 0;
         }
+
         char * pos = text_buf;
         char * last_byte = text_buf + 128;
         int msg_len = strlen(text_buf);
 
-        while(msg_len)
+        uint32_t first_msg = msg_num;
+        uint32_t num_packets = (msg_len+3)/4;
+        while(msg_len > 0)
         {
             if(msg_len > 0) {
                 char packet[8] = {0,0,0,0,0,0,0,0};
@@ -108,33 +95,21 @@ int main(int argc, char **argv)
                 char * lim = pos + 4;
                 if(lim > last_byte)
                     lim = last_byte;
-                while(pos < lim) {
+                while(pos < lim && msg_len--) {
                     packet[n++] = *pos;
                     pos++;
-                    msg_len--;
-                    if(msg_len == 0)
-                        break;
                 }
 
                 //Add packet number and CRC information to packet
                 finalize_packet(packet, msg_num++);
+                
 
-                for(int i = 0; i < 5000; i++)
-                {
-                    //repeat each transmission 256 times
-                    synchronize();
-                    for(int r = 0; r < 256; r++)
-                    {
-                        //receiver is done, transmit packet!
-                        transmit(packet);
-                    }
+                printf("\n------> sending packet %d/%d....",msg_num-first_msg, num_packets);
+                for(int r = 0; r < SPAM_COUNT; r++) {
+                    transmit(packet);
                 }
-                sched_yield();
-                sched_yield();
-                sched_yield();
+                printf("packet sent!");
             }
         }
     }
-
-    return 0;
 }

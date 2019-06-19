@@ -18,22 +18,12 @@
 #include "l1.h"
 #include "low.h"
 #include "crc16.h"
-/*
- * Detects a bit by repeatedly measuring the access time of the addresses in the
- * probing set and counting the number of misses for the clock length of state->interval.
- *
- * If the the first_bit argument is true, relax the strict definition of "one" and try to
- * sync with the sender.
- */
-typedef struct __attribute__((__packed__)) {
-    unsigned char num;
-    char msg[7];
-    unsigned char ecc;
-} cc_payload;
-#define THRESHOLD_ONE 130
-#define L1_HIT 74
 
-bool is_valid_packet(char * p) 
+#define SIGNALING_THRESHOLD 120
+#define FIRST_CHAR_INDEX 2
+#define LAST_CHAR_INDEX 6
+
+bool verify_crc16(char * p) 
 {
     uint16_t crc = crc16_ccitt_init();
     for(int i =0; i < 8; i++)
@@ -42,18 +32,8 @@ bool is_valid_packet(char * p)
     return (crc == 0);
 }
 
-#define SYNC_DELAY_FACTOR 28
-#define NEXT_PERIOD_BOUNDARY (1<<(SYNC_DELAY_FACTOR+1))
-
-void synchronize()
-{
-    uint64_t mask = (((uint64_t) 1) << 44)-1; 
-    while(rdtscp() & mask > 0x1000)
-        ;
-}
-
 int set_timings[64][256];
-void measure_thresholds(uint16_t * results, int * rmap, char * dst)
+void decode_thresholds(uint16_t * results, int * rmap, char * dst)
 {
     char payload[8] = {0,0,0,0,0,0,0,0};
     int set_threshold[64];
@@ -82,7 +62,7 @@ void measure_thresholds(uint16_t * results, int * rmap, char * dst)
         for(int b = 0; b < 8; b++) {
             int i = c*8 + b;
             //printf("SET %d = %d\n", set++, set_threshold[i]);
-            if(set_threshold[i] > 120)
+            if(set_threshold[i] > SIGNALING_THRESHOLD)
                 payload[c] |= (1<<b);
         }
     }
@@ -98,6 +78,7 @@ void measure_thresholds(uint16_t * results, int * rmap, char * dst)
 
 int main(int argc, char **argv)
 {
+    setbuf(stdout, NULL);
     char msg[7];
     msg[6] = 0;
     uint64_t next_period;
@@ -117,14 +98,12 @@ int main(int argc, char **argv)
         results[i] = 1;
 
     int next_msg = 0;
-    uint16_t last_msg_num = 0xFFFF;
+    uint16_t last_packet_num = 0xFFFF;
     char buf[128];
     char * pos = buf;
-    printf("\nMsg: ");
     while(1) {
 
         char packet[8] = {0,0,0,0,0,0,0,0};
-        synchronize();
         for(int i = 0; i < 128; i++)
         {
             uint16_t * res = results + nsets*i*2;
@@ -133,20 +112,30 @@ int main(int argc, char **argv)
             l1_bprobe(l1, res);
         }
 
-        measure_thresholds(results,rmap, packet);
-        
-        if(is_valid_packet(packet) == false){
-            sched_yield();
+        decode_thresholds(results,rmap, packet);
+
+        bool crc_is_valid   = verify_crc16(packet);
+        uint16_t packet_num = (uint16_t) packet[0];
+        bool is_new_packet  = packet_num != last_packet_num;
+
+        if(crc_is_valid && is_new_packet)
+            last_packet_num = packet_num;
+        else
             continue;
-        } 
-        uint16_t msg_num = (uint16_t) packet[0];
-        if(msg_num == last_msg_num)
-            continue;
-        last_msg_num = msg_num;
-        for(int i = 2; i <6; i++ ) {
-            if(packet[i] == 0)
-                printf("\nMsg: ");
-            printf("%c",packet[i]);
+
+        //Move the packet contents into the buffer
+        for(int i = FIRST_CHAR_INDEX; i < LAST_CHAR_INDEX; i++ ) {
+            //A new line is the end of the message
+            if(packet[i] == '\n') {
+                pos[0] = 0;
+                pos = buf;
+                //Print buffer contents
+                printf("Msg: %s\n", pos);
+                memset(buf,0,128);
+                break;
+            } else {
+                *pos++ = packet[i];
+            }
         }
     }
     return 0;
