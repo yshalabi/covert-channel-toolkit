@@ -1,0 +1,6 @@
+add_executable (measure-l1d-contention measure_l1d_contention.c)
+add_executable (create-l1d-contention create_l1d_contention.c)
+target_link_libraries (measure-l1d-contention LINK_PUBLIC util)
+target_link_libraries (create-l1d-contention LINK_PUBLIC util)
+target_link_libraries (measure-l1d-contention LINK_PUBLIC l1d)
+target_link_libraries (create-l1d-contention LINK_PUBLIC l1d)
