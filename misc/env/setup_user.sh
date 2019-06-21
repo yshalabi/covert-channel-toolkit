@@ -5,11 +5,11 @@ declare -A cmd2help
 user2core['ubuntu']='0,0'
 cmd2args['ubuntu']='0,0'
 #l1d args info...
-cmd2args['isca-cc-pp-l1d-recv']=""
-cmd2args['isca-cc-pp-l1d-send']=""
-cmd2args['isca-cc-graph-l1d-contention']=""
-cmd2args['isca-cc-measure-l1d-contention']=""
-cmd2args['isca-cc-create-l1d-contention']=""
+cmd2args['isca-cc-pp-l1d-recv']="(no args)"
+cmd2args['isca-cc-pp-l1d-send']="(no args)"
+cmd2args['isca-cc-graph-l1d-contention']="(no args)"
+cmd2args['isca-cc-measure-l1d-contention']="(no args)"
+cmd2args['isca-cc-create-l1d-contention']="(no args)"
 #l1d args info...
 cmd2args['isca-cc-fr-recv']=""
 cmd2args['isca-cc-fr-send']=""
@@ -17,8 +17,8 @@ cmd2args['isca-cc-fr-send']=""
 cmd2args['isca-cc-pp-llc-recv']=""
 cmd2args['isca-cc-pp-llc-send']=""
 #l1d help string
-cmd2help['isca-cc-pp-l1d-recv']=""
-cmd2help['isca-cc-pp-l1d-send']=""
+cmd2help['isca-cc-pp-l1d-recv']="Covert receiver chat client. Built using prime+probe on L1D cache. Must share core with sender!"
+cmd2help['isca-cc-pp-l1d-send']="Covert receiver send client. Built using prime+probe on L1D cache. Must share core with receiver!"
 cmd2help['isca-cc-graph-l1d-contention']=""
 cmd2help['isca-cc-measure-l1d-contention']=""
 cmd2help['isca-cc-create-l1d-contention']=""
