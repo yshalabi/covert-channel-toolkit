@@ -19,7 +19,7 @@ cmd2args['isca-cc-pp-llc-send']=""
 #l1d help string
 cmd2help['isca-cc-pp-l1d-recv']="Covert receiver chat client. Built using prime+probe on L1D cache. Must share core with sender!"
 cmd2help['isca-cc-pp-l1d-send']="Covert transmitter chat client. Built using prime+probe on L1D cache. Must share core with receiver!"
-cmd2help['isca-cc-graph-l1d-contention']=""
+cmd2help['isca-cc-graph-l1d-contention']="Visualize the contention on the L1D. Run with \"isca-cc-create-l1d-contention\" or \"isca-cc-pp-l1d-send\" to visualize  L1D cache-contention!"
 cmd2help['isca-cc-measure-l1d-contention']=""
 cmd2help['isca-cc-create-l1d-contention']=""
 #llc help string
