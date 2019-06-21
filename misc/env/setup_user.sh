@@ -13,38 +13,25 @@ function _cc_welcome_user() {
 	echo -e "Welcome to the ISCA 2019 Covert-Channel tutorial hands-on machine!"
 	echo -e  "\e[5m \e[96m PLEASE READ THESE INSTRUCTIONS!!!! \e[0m"
 	echo ""
+	echo "these covert-channels communicate through physical resources."
+	echo -e "\e[31minterference across processes is possible and will add"
+	echo "noise to your runs and disrupt other students!"
+	echo "So please, please please --- pin your sender/receiver!"
+	echo -e "\e[0m"
+	echo -e "You have been assigned \e[91mThread-${TSEND}\e[0m and \e[91mThread-${TRECV}\e[0m."
+	echo "these threads are all yours, pin your sender/receiver to these threads!"
+	echo -e "Other threads are for other students -- do \e[91mNOT\e[0m pin anywhere else!!"
 	echo ""
-	echo "Because our covert-channels communicate through physical resources interference across processes is possible!!!"
-	echo "This interference will add noise to your runs and disrupt other students!"
-	echo "So please	pin your sender/receiver!"
-	echo "You have been assigned T${TSEND} and T${TRECV} -- use them, they are all yours!"
-	echo "please do not pin your channels elsewhere to avoid interfering with other students!!"
-	echo "for your convenience we created shortcuts to pin your runs"
+	echo "For your convenience we created shortcuts to pin your runs"
 	echo -e "To pin to your sender core use \e[92m pin_send [program args ...]\e[0m"
 	echo -e "To pin to your recevier core use \e[92m pin_recv [program args ...]\e[0m"
 	echo -e ""
-
 	echo "Pre-built tutorial binaries are available for your use."
-	echo "To see them all type isca-cc- and hit tab!"
-	echo ""
-
-	echo -e "\e[96mflush+reload commands:\e[0m"
-	echo -e "\e[96m	fr-send		-- flush+reload chat client (sender)\e[0m"
-	echo -e "\e[96m	fr-recv		-- flush+reload chat client (receiver)\e[0m"
-	echo ""
-	echo -e "\e[96mprime+probe llc commands:\e[0m"
-	echo -e "\e[96m	pp-llc-send		-- prime+probe (LLC cache) covert chat client (sender)\e[0m"
-	echo -e "\e[96m	pp-llc-recv		-- prime+probe (LLC cache) covert chat client (receiver)\e[0m"
-	echo -e "\e[96m pp-llc-graph		-- graph channel bandwidth of LLC covert channel\e[0m"
+	echo "To see them all type \e[92misca-cc-\e[0m and hit tab!"
+	echo "To see more about them use the command \"\e[92misca-cc-help\e[0m\""
 	echo -e ""
-	echo -e "\e[96mprime+probe L1D commands:\e[0m"
-	echo -e "\e[96m	pp-l1d-send		-- prime+probe (L1D cache) covert chat client (sender)\e[0m"
-	echo -e "\e[96m	pp-l1d-recv		-- prime+probe (L1D cache) covert chat client (receiver)\e[0m"
-	echo -e "\e[96m measure-l1d-contention	-- measure contention in L1D cache\e[0m"
-	echo -e "\e[96m create-l1d-contention	-- graph contention in L1D cache in terminal\e[0m"
-	echo ""
 	echo -e "get the sources using: git clone https://github.com/yshalabi/covert-channel-tutorial"
-	echo "Have fun, and remember -- only pin using pin_send and pin_recv!!"
+	echo "Have fun, and remember -- only pin using \e[92mpin_send\e[0m and \e[92mpin_recv\e[0m!!"
 }
 function _cc_setup_map() {
 	NODE=$1
@@ -64,8 +51,20 @@ function pin_recv () {
 }
 
 function cc_help() {
-	echo "covert-channel-tutorial help"
-	ls ${CC_BINS_DIR}
+	echo -e "\e[96mflush+reload commands:\e[0m"
+	echo -e "\e[96m	fr-send		-- flush+reload chat client (sender)\e[0m"
+	echo -e "\e[96m	fr-recv		-- flush+reload chat client (receiver)\e[0m"
+	echo ""
+	echo -e "\e[96mprime+probe llc commands:\e[0m"
+	echo -e "\e[96m	pp-llc-send		-- prime+probe (LLC cache) covert chat client (sender)\e[0m"
+	echo -e "\e[96m	pp-llc-recv		-- prime+probe (LLC cache) covert chat client (receiver)\e[0m"
+	echo -e "\e[96m pp-llc-graph		-- graph channel bandwidth of LLC covert channel\e[0m"
+	echo ""
+	echo -e "\e[96mprime+probe L1D commands:\e[0m"
+	echo -e "\e[96m	pp-l1d-send		-- prime+probe (L1D cache) covert chat client (sender)\e[0m"
+	echo -e "\e[96m	pp-l1d-recv		-- prime+probe (L1D cache) covert chat client (receiver)\e[0m"
+	echo -e "\e[96m measure-l1d-contention	-- measure contention in L1D cache\e[0m"
+	echo -e "\e[96m create-l1d-contention	-- graph contention in L1D cache in terminal\e[0m"
 }
 function _cc_setup_user_env() {
 	export -f pin_send
