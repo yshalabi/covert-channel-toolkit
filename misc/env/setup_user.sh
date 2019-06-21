@@ -26,10 +26,11 @@ function _cc_welcome_user() {
 	echo ""
 	echo "Pre-built tutorial binaries are available for your use."
 	echo -e "\e[96mprime+probe L1D commands:\e[0m"
-	echo -e "\e[96m	pp_l1d_send\e[0m"
-	echo -e "\e[96m	pp_l1d_recv\e[0m"
-	echo -e "\e[96m  viz_l1d_cont\e[0m"
-	echo -e "\e[96m  make_l1d_cont\e[0m"
+	echo -e "\e[96m	pp_l1d_send		-- prime+probe (L1D cache) chat client (sender)\e[0m"
+	echo -e "\e[96m	pp_l1d_recv		-- prime+probe (L1D cache) chat client (receiver)\e[0m"
+	echo -e "\e[96m measure-l1d-contention	-- measure contention in L1D cache\e[0m"
+	echo -e "\e[96m create-l1d-contention	-- graph contention in L1D cache in terminal\e[0m"
+	echo -e "\e[96m graph-l1d-contention	-- graph contention in L1D cache in terminal\e[0m"
 	echo -e ""
 	echo -e "get the sources using: git clone https://github.com/yshalabi/covert-channel-tutorial"
 	echo "Have fun!"
@@ -50,19 +51,22 @@ function pin_send () {
 function pin_recv () {
 	echo "pin_recv -c ${TRECV} $@"
 }
+
+function cc_help() {
+	echo "covert-channel-tutorial help"
+	ls ${CC_BINS_DIR}
+}
 function _cc_setup_user_env() {
 	export -f pin_send
 	export -f pin_recv
+	export -f cc_help
+	export PATH=${CC_BINS_DIR}:${PATH}
 }
 function _cc_setup() {
 	_cc_setup_map 0 0
 	_cc_setup_map 1 1
 	_cc_setup_assign_threads
 	_cc_setup_user_env
-}
-function isca_help() {
-	echo "CC HELP MSG"
-	ls ${CC_BINS_DIR}
 }
 
 _cc_setup
