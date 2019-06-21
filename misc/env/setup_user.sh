@@ -10,9 +10,9 @@ cmd2args['isca-cc-pp-l1d-send']="(no args)"
 cmd2args['isca-cc-graph-l1d-contention']="(no args)"
 cmd2args['isca-cc-measure-l1d-contention']="(no args)"
 cmd2args['isca-cc-create-l1d-contention']="(no args)"
-#l1d args info...
-cmd2args['isca-cc-fr-recv']=""
-cmd2args['isca-cc-fr-send']=""
+#fr args info...
+cmd2args['isca-cc-fr-recv']="(no args required) Flags exist to interface with the binary:\n\t-f,\tspecify a shared file.\n\t-o,\tspecify a offset into the shared file\n\t-i,\tset the send bit interval rate\n"
+cmd2args['isca-cc-fr-send']="(no args required) Flags exist to interface with the binary:\n\t-f,\tspecify a shared file.\n\t-o,\tspecify a offset into the shared file\n\t-i,\tset the send bit interval rate\n"
 #llc args info...
 cmd2args['isca-cc-pp-llc-recv']=""
 cmd2args['isca-cc-pp-llc-send']=""
@@ -26,8 +26,8 @@ cmd2help['isca-cc-create-l1d-contention']=""
 cmd2help['isca-cc-pp-llc-recv']=""
 cmd2help['isca-cc-pp-llc-send']=""
 #flush-reload help info
-cmd2help['isca-cc-fr-recv']=""
-cmd2help['isca-cc-fr-send']=""
+cmd2help['isca-cc-fr-recv']="Flush+Reload Receiver Chat Client! Run the binary as is and you should be all good to go. For extra information, check the args info!\n"
+cmd2help['isca-cc-fr-send']="Flush+Reload Sender Chat Client! Run the binary as is and you should be all good to go. For extra information, check the args info!\n"
 CC_BINS_DIR=/isca19/bins
 function _cc_setup_assign_threads() {
 	USER_NAME=$(whoami)
