@@ -31,7 +31,7 @@ function _cc_welcome_user() {
 	echo -e "\e[96m  viz_l1d_cont\e[0m"
 	echo -e "\e[96m  make_l1d_cont\e[0m"
 	echo -e ""
-	echo -e "the sources for these binaries is at: https://github.com/yshalabi/covert-channel-tutorial"
+	echo -e "get the sources using: git clone https://github.com/yshalabi/covert-channel-tutorial"
 	echo "Have fun!"
 }
 function _cc_setup_map() {
