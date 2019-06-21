@@ -7,9 +7,9 @@ cmd2args['ubuntu']='0,0'
 #l1d args info...
 cmd2args['isca-cc-pp-l1d-recv']="(no args)"
 cmd2args['isca-cc-pp-l1d-send']="(no args)"
-cmd2args['isca-cc-graph-l1d-contention']="(no args)"
-cmd2args['isca-cc-measure-l1d-contention']="(no args)"
-cmd2args['isca-cc-create-l1d-contention']="(no args)"
+cmd2args['isca-cc-graph-l1d-contention']="(no args but dont forget to use \e[92mpin_send\e[96m and \e[92mpin_recv\e[96m)"
+cmd2args['isca-cc-measure-l1d-contention']="(no args but dont forget to use \e[92mpin_send\e[96m and \e[92mpin_recv\e[96m)"
+cmd2args['isca-cc-create-l1d-contention']="(no args but dont gotget to use \e[92mpin_send\e[96m and \e[92mpin_recv\e[96m)"
 #fr args info...
 cmd2args['isca-cc-fr-recv']="(no args required) Flags exist to interface with the binary:\n\t-f,\tspecify a shared file.\n\t-o,\tspecify a offset into the shared file\n\t-i,\tset the send bit interval rate\n"
 cmd2args['isca-cc-fr-send']="(no args required) Flags exist to interface with the binary:\n\t-f,\tspecify a shared file.\n\t-o,\tspecify a offset into the shared file\n\t-i,\tset the send bit interval rate\n"
@@ -17,17 +17,17 @@ cmd2args['isca-cc-fr-send']="(no args required) Flags exist to interface with th
 cmd2args['isca-cc-pp-llc-recv']=""
 cmd2args['isca-cc-pp-llc-send']=""
 #l1d help string
-cmd2help['isca-cc-pp-l1d-recv']="Covert receiver chat client. Built using prime+probe on L1D cache. Must share core with sender!"
-cmd2help['isca-cc-pp-l1d-send']="Covert transmitter chat client. Built using prime+probe on L1D cache. Must share core with receiver!"
-cmd2help['isca-cc-graph-l1d-contention']="Visualize the contention on the L1D. Run with \"isca-cc-create-l1d-contention\" or \"isca-cc-pp-l1d-send\" to visualize  L1D cache-contention!"
+cmd2help['isca-cc-pp-l1d-recv']="Covert receiver chat client. Built using prime+probe on L1D cache (Must share core with sender!)"
+cmd2help['isca-cc-pp-l1d-send']="Covert transmitter chat client. Built using prime+probe on L1D cache. (Must share core with receiver!)"
+cmd2help['isca-cc-graph-l1d-contention']="Visualize the contention on the L1D.\n\tRun with \"isca-cc-create-l1d-contention\" or \"isca-cc-pp-l1d-send\" to visualize  L1D cache-contention!"
 cmd2help['isca-cc-measure-l1d-contention']=""
 cmd2help['isca-cc-create-l1d-contention']=""
 #llc help string
 cmd2help['isca-cc-pp-llc-recv']=""
 cmd2help['isca-cc-pp-llc-send']=""
 #flush-reload help info
-cmd2help['isca-cc-fr-recv']="Flush+Reload Receiver Chat Client! Run the binary as is and you should be all good to go. For extra information, check the args info!\n"
-cmd2help['isca-cc-fr-send']="Flush+Reload Sender Chat Client! Run the binary as is and you should be all good to go. For extra information, check the args info!\n"
+cmd2help['isca-cc-fr-recv']="Flush+Reload Receiver Chat Client!\n\tRun the binary as is and you should be all good to go.\n\tFor extra information, check the args info!\n"
+cmd2help['isca-cc-fr-send']="Flush+Reload Sender Chat Client!\n\tRun the binary as is and you should be all good to go.\n\tFor extra information, check the args info!\n"
 CC_BINS_DIR=/isca19/bins
 function _cc_setup_assign_threads() {
 	USER_NAME=$(whoami)
@@ -89,14 +89,16 @@ function isca-cc-help() {
 	N=$#
 	if [[ "$N" -eq "0" ]]; then
 		TUT_BINS=$(ls /isca19/bins)
-		echo "Pre-built tutorial binaries are available for your use:"
 		for prog in $(ls /isca19/bins); do
+			echo -e "Cmnd: \e[92m${prog}\e[0m"
 			HELP=${cmd2help[${prog}]}
 			ARGS=${cmd2args[${prog}]}
-			echo -e "Name: \e[92m${prog}\e[0m"
-			echo -e "Args: \e[92m${ARGS}\e[0m"
-			echo -e "Info: \e[92m${HELP}\e[0m"
+			echo -e "Args: \e[96m${ARGS}\e[0m"
+			echo -e "Info: \e[96m${HELP}\e[0m"
+			echo "------------------------------------------------------------"
+			echo ""
 		done
+		return
 		echo -e "available commands -- (prefix with isca-scc)"
 		echo -e "\e[96mflush+reload commands:\e[0m"
 		echo -e "\e[96m	fr-send		-- flush+reload chat client (sender)\e[0m"
@@ -117,7 +119,7 @@ function isca-cc-help() {
 	prog=$1
 	HELP=${cmd2help[${prog}]}
 	ARGS=${cmd2args[${prog}]}
-	echo -e "Name: \e[92m${prog}\e[0m"
+	echo -e "\e[92m${prog}\e[0m"
 	echo -e "Args: \e[92m${ARGS}\e[0m"
 	echo -e "Info: \e[92m${HELP}\e[0m"
 }
