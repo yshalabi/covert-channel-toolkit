@@ -18,7 +18,7 @@ cmd2args['isca-cc-pp-llc-recv']=""
 cmd2args['isca-cc-pp-llc-send']=""
 #l1d help string
 cmd2help['isca-cc-pp-l1d-recv']="Covert receiver chat client. Built using prime+probe on L1D cache. Must share core with sender!"
-cmd2help['isca-cc-pp-l1d-send']="Covert receiver send client. Built using prime+probe on L1D cache. Must share core with receiver!"
+cmd2help['isca-cc-pp-l1d-send']="Covert transmitter chat client. Built using prime+probe on L1D cache. Must share core with receiver!"
 cmd2help['isca-cc-graph-l1d-contention']=""
 cmd2help['isca-cc-measure-l1d-contention']=""
 cmd2help['isca-cc-create-l1d-contention']=""
