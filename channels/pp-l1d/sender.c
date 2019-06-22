@@ -70,7 +70,19 @@ int main(int argc, char **argv)
     uint32_t msg_num = 0;
     setbuf(stdout, NULL);
 
-    printf("Please type a message (exit to stop).\n");
+    int repeat_count = SPAM_COUNT;
+    printf("Please type a message (exit to stop).");
+    if(argc > 1) {
+        repeat_count = atoi(argv[1]);
+        if(repeat_count < 0) {
+            printf("please use positive repeat count\n");
+            return 1;
+        }
+        printf(" Repeat count set to %d", repeat_count);
+    }
+    printf("\n");
+
+
     while (1) {
         // Get a message to send from the user
         printf("\n< ");
@@ -105,7 +117,7 @@ int main(int argc, char **argv)
                 
 
                 printf("\n------> sending packet %d/%d....",msg_num-first_msg, num_packets);
-                for(int r = 0; r < SPAM_COUNT; r++) {
+                for(int r = 0; r < repeat_count; r++) {
                     transmit(packet);
                 }
                 printf("packet sent!");
