@@ -115,8 +115,6 @@ int main(int argc, char **argv)
                 //Add packet number and CRC information to packet
                 finalize_packet(packet, msg_num++);
                 
-
-                printf("\n------> sending packet %d/%d....",msg_num-first_msg, num_packets);
                 for(int r = 0; r < repeat_count; r++) {
                     transmit(packet);
                 }
