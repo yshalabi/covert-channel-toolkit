@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 CONTENTION_BINS=/isca19/bins
-MEASURE_L1D_CON=${CONTENTION_BINS}/measure-l1d-contention
+MEASURE_L1D_CON=${CONTENTION_BINS}/isca-cc-measure-l1d-contention
 MODE=points #2
 CORE=${TSEND}
 OTHER=${TRECV}
