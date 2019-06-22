@@ -1,12 +1,8 @@
-# cc-fun
-various covert channels. work-in-progress.
-
-to build: 
-```sh
-cd cc-fun; mkdir build; cd build; cmake ..
-make
-```
+# covert-channel-toolkit
+work in progress for reearch in side-channels. various covert channel implementations. A few things in the pipeline.
 Binaries will be in build/channels
+
+Used for hands-on session in ISCA 2019 workshop on side-channels.
 
 ## Side-channels
 - channels/drng     -- cc that uses the Intel HW digital random-number-generator
