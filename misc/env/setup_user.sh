@@ -14,8 +14,8 @@ cmd2args['isca-cc-create-l1d-contention']="(Sets to generate contention on. Dont
 cmd2args['isca-cc-fr-recv']="(no args required) Flags exist to interface with the binary:\n\t-f,\tspecify a shared file.\n\t-o,\tspecify a offset into the shared file\n\t-i,\tset the send bit interval rate\n"
 cmd2args['isca-cc-fr-send']="(no args required) Flags exist to interface with the binary:\n\t-f,\tspecify a shared file.\n\t-o,\tspecify a offset into the shared file\n\t-i,\tset the send bit interval rate\n"
 #llc args info...
-cmd2args['isca-cc-pp-llc-recv']=""
-cmd2args['isca-cc-pp-llc-send']=""
+cmd2args['isca-cc-pp-llc-recv']="(no args required)\n\t-r,\tspecify a cache set to contend on (default is 0).\n\t-i,\tspecify the channel bit interval (in cycles).\n\t-p,\tspecify cycles receiver spends priming the cache.\n\t-a,\tspecify cycles sender spends accessing the cache.\n\t-b,\trun channel in benchmark mode."
+cmd2args['isca-cc-pp-llc-send']="(no args required)\n\t-r,\tspecify a cache set to contend on (default is 0).\n\t-i,\tspecify the channel bit interval (in cycles).\n\t-p,\tspecify cycles receiver spends priming the cache.\n\t-a,\tspecify cycles sender spends accessing the cache.\n\t-b,\trun channel in benchmark mode."
 #l1d help string
 cmd2help['isca-cc-pp-l1d-recv']="Covert receiver chat client. Built using prime+probe on L1D cache (Must share core with sender!)"
 cmd2help['isca-cc-pp-l1d-send']="Covert transmitter chat client. Built using prime+probe on L1D cache. (Must share core with receiver!)"
@@ -23,8 +23,8 @@ cmd2help['isca-cc-graph-l1d-contention']="Visualize the contention on the L1D.\n
 cmd2help['isca-cc-measure-l1d-contention']="Measures timings on the L1D sets."
 cmd2help['isca-cc-create-l1d-contention']="Generate contention on specific sets."
 #llc help string
-cmd2help['isca-cc-pp-llc-recv']=""
-cmd2help['isca-cc-pp-llc-send']=""
+cmd2help['isca-cc-pp-llc-recv']="Prime+Probe LLC channel receiver."
+cmd2help['isca-cc-pp-llc-send']="Prime+Probe LLC channel sender."
 #flush-reload help info
 cmd2help['isca-cc-fr-recv']="Flush+Reload Receiver Chat Client!\n\tRun the binary as is and you should be all good to go.\n\tFor extra information, check the args info!\n"
 cmd2help['isca-cc-fr-send']="Flush+Reload Sender Chat Client!\n\tRun the binary as is and you should be all good to go.\n\tFor extra information, check the args info!\n"
