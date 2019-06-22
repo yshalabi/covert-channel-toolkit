@@ -99,22 +99,6 @@ function isca-cc-help() {
 			echo ""
 		done
 		return
-		echo -e "available commands -- (prefix with isca-scc)"
-		echo -e "\e[96mflush+reload commands:\e[0m"
-		echo -e "\e[96m	fr-send		-- flush+reload chat client (sender)\e[0m"
-		echo -e "\e[96m	fr-recv		-- flush+reload chat client (receiver)\e[0m"
-		echo ""
-		echo -e "\e[96mprime+probe llc commands:\e[0m"
-		echo -e "\e[96m	pp-llc-send		-- prime+probe (LLC cache) covert chat client (sender)\e[0m"
-		echo -e "\e[96m	pp-llc-recv		-- prime+probe (LLC cache) covert chat client (receiver)\e[0m"
-		echo -e "\e[96m	pp-llc-graph		-- prime+probe (LLC cache) covert chat client (receiver)\e[0m"
-		echo -e "\e[96m pp-llc-graph		-- graph channel bandwidth of LLC covert channel\e[0m"
-		echo ""
-		echo -e "\e[96mprime+probe L1D commands:\e[0m"
-		echo -e "\e[96m	pp-l1d-send		-- prime+probe (L1D cache) covert chat client (sender)\e[0m"
-		echo -e "\e[96m	pp-l1d-recv		-- prime+probe (L1D cache) covert chat client (receiver)\e[0m"
-		echo -e "\e[96m measure-l1d-contention	-- measure contention in L1D cache\e[0m"
-		echo -e "\e[96m create-l1d-contention	-- graph contention in L1D cache in terminal\e[0m"
 	fi
 	prog=$1
 	HELP=${cmd2help[${prog}]}
