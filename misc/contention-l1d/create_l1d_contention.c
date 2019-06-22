@@ -37,13 +37,6 @@ void transmit(char * p)
                 buffer[index*64 + 4096*w] = p[c] ^ p[0];
         }
     }
-    /*
-    sleep(1);
-    printf("Sigaled Sets: ");
-    for(int i = 0; i < 64; i++)
-        if(sets[i] == 1) printf("-%d",i);
-    sleep(1);
-    printf("\n");*/
 }
 
 int main(int argc, char **argv)
@@ -54,26 +47,22 @@ int main(int argc, char **argv)
     printf("Select a set to toggle. (type start to begin contention generation)\n");
     uint64_t sets = 0;
     char packet[8] = {0,0,0,0,0,0,0,0};
-    while (1) {
-        // Get a message to send from the user
-        printf("\n< ");
-        char text_buf[128];
-        fgets(text_buf, sizeof(text_buf), stdin);
-
-        if (strcmp(text_buf, "start\n") == 0) {
-            break;
-        }
-
-        int d = atoi(text_buf);
+    if(argc <= 1) {
+        printf("Usage: pass L1d sets to activate\nEg: contend on sets 0 1 2 and 3 by using isca-cc-create-l1d-contention 0 1 2 3\n");
+        return 1;
+    }
+    for(int i = 1; i < argc; i++){
+        int d = atoi(argv[i]);
         if(d > 0 && d < 64)
         {
             uint64_t set_num = 1<<d;
             sets ^= set_num;
             if(sets & set_num)
-                printf("enabled set %d",d);
+                printf("enabled set %d\n",d);
             else
-                printf("disabled set %d",d);
+                printf("disabled set %d\n",d);
         }
+
     }
     uint64_t enabled_sets = sets;
     for(int i = 0; i < 8; i++) {
@@ -90,9 +79,6 @@ int main(int argc, char **argv)
         for(int r = 0; r < SPAM_COUNT; r++) {
             transmit(packet);
         }
-        asm("pause");
-        asm("pause");
-        asm("pause");
         asm("pause");
     }
 }

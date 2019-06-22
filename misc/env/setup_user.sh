@@ -9,7 +9,7 @@ cmd2args['isca-cc-pp-l1d-recv']="(no args)"
 cmd2args['isca-cc-pp-l1d-send']="(no args)"
 cmd2args['isca-cc-graph-l1d-contention']="(no args but dont forget to use \e[92mpin_send\e[96m and \e[92mpin_recv\e[96m)"
 cmd2args['isca-cc-measure-l1d-contention']="(no args but dont forget to use \e[92mpin_send\e[96m and \e[92mpin_recv\e[96m)"
-cmd2args['isca-cc-create-l1d-contention']="(no args but dont gotget to use \e[92mpin_send\e[96m and \e[92mpin_recv\e[96m)"
+cmd2args['isca-cc-create-l1d-contention']="(Sets to generate contention on. Dont forget to use \e[92mpin_send\e[96m and \e[92mpin_recv\e[96m)"
 #fr args info...
 cmd2args['isca-cc-fr-recv']="(no args required) Flags exist to interface with the binary:\n\t-f,\tspecify a shared file.\n\t-o,\tspecify a offset into the shared file\n\t-i,\tset the send bit interval rate\n"
 cmd2args['isca-cc-fr-send']="(no args required) Flags exist to interface with the binary:\n\t-f,\tspecify a shared file.\n\t-o,\tspecify a offset into the shared file\n\t-i,\tset the send bit interval rate\n"
@@ -20,8 +20,8 @@ cmd2args['isca-cc-pp-llc-send']=""
 cmd2help['isca-cc-pp-l1d-recv']="Covert receiver chat client. Built using prime+probe on L1D cache (Must share core with sender!)"
 cmd2help['isca-cc-pp-l1d-send']="Covert transmitter chat client. Built using prime+probe on L1D cache. (Must share core with receiver!)"
 cmd2help['isca-cc-graph-l1d-contention']="Visualize the contention on the L1D.\n\tRun with \"isca-cc-create-l1d-contention\" or \"isca-cc-pp-l1d-send\" to visualize  L1D cache-contention!"
-cmd2help['isca-cc-measure-l1d-contention']=""
-cmd2help['isca-cc-create-l1d-contention']=""
+cmd2help['isca-cc-measure-l1d-contention']="Measures timings on the L1D sets."
+cmd2help['isca-cc-create-l1d-contention']="Generate contention on specific sets."
 #llc help string
 cmd2help['isca-cc-pp-llc-recv']=""
 cmd2help['isca-cc-pp-llc-send']=""
@@ -126,7 +126,7 @@ function isca-cc-help() {
 function _cc_setup_user_env() {
 	export -f pin_send
 	export -f pin_recv
-	export -f cc_help
+	export -f isca-cc-help
 	export PATH=${CC_BINS_DIR}:${PATH}
 }
 function _cc_setup() {
