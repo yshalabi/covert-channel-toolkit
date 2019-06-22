@@ -126,7 +126,7 @@ function isca-cc-help() {
 function _cc_setup_user_env() {
 	export -f pin_send
 	export -f pin_recv
-	export -f cc_help
+	export -f isca-cc-help
 	export PATH=${CC_BINS_DIR}:${PATH}
 }
 function _cc_setup() {
