@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <immintrin.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdarg.h>
@@ -19,11 +20,28 @@
 #include "low.h"
 #include "crc16.h"
 #define SPAM_COUNT 1250
+#define L1_NUM_SETS 64
+#define L1_WAYS_PER_SET 8
+#define PTE_SIZE 4096
+#define SCALE 1
+//char data_base __attribute__ ((aligned(4096)))
+char data_base[PTE_SIZE*(L1_NUM_SETS*L1_WAYS_PER_SET)] __attribute__((aligned(4096)));
+__m256i way_set_indices;
+static int random_val;
 static volatile char __attribute__((aligned(32768))) buffer[4096*8];
+void init(int argc, char const * argv[]) {
+    int way_index[8];
+    random_val = argc;
+    for(int i =0; i < L1_WAYS_PER_SET; i++)
+        way_index[i] = i * PTE_SIZE;
+    way_set_indices = _mm256_set_epi32 (way_index[0], way_index[1], way_index[2], way_index[3], way_index[4], way_index[5], way_index[6], way_index[7]);
+}
 
-void transmit(char * p)
+void transmit(char * p, int repeat_count)
 {
     int sets[64];
+    for(int r = 0; r < repeat_count; r++)
+    {
     for(int i = 0; i < 64; i++)
         sets[i] = -1;
     for(int c = 0; c < 8; c++){
@@ -37,6 +55,7 @@ void transmit(char * p)
                 buffer[index*64 + 4096*w] = p[c] ^ p[0];
         }
     }
+    }
     /*
     sleep(1);
     printf("Sigaled Sets: ");
@@ -44,6 +63,30 @@ void transmit(char * p)
         if(sets[i] == 1) printf("-%d",i);
     sleep(1);
     printf("\n");*/
+}
+void transmit_avx(char * msg, int repeat_count) {
+    int x = 1;
+    __m256i set_data = _mm256_set_epi32(x^random_val,x^random_val,x^random_val,x^random_val,x^random_val,x^random_val,x^random_val,x^random_val);
+
+    for(int r = 0; r < repeat_count; r++) {
+    for(int set_base = 0; set_base < 64; set_base+=32)
+    {
+        int msg_msk=0;
+        for(int i = 0; i < 32; i++) {
+            msg_msk |= ((int*)msg)[0] & (1<<(set_base+i));
+        }
+        __m256i msg_msk_vec= _mm256_set_epi32(msg_msk,msg_msk,msg_msk,msg_msk,msg_msk,msg_msk,msg_msk,msg_msk);
+
+        int s = 0;
+        for( ; s < 32; s++) {
+            if(((int*)msg)[0] & (1<<(s+set_base))) {
+                void * set_data_ptr = (void*)(data_base + 8*(s+set_base));
+                set_data= _mm256_mask_i32gather_epi32 (set_data, set_data_ptr, way_set_indices, msg_msk_vec, SCALE);
+            }
+            msg_msk_vec    = _mm256_slli_epi32(msg_msk_vec, 1);
+        }
+    }
+    }
 }
 
 uint32_t finalize_packet(char * p, uint32_t packet_num)
@@ -67,6 +110,7 @@ uint32_t finalize_packet(char * p, uint32_t packet_num)
 
 int main(int argc, char **argv)
 {
+    init(argc,argv);
     uint32_t msg_num = 0;
     setbuf(stdout, NULL);
 
@@ -115,9 +159,7 @@ int main(int argc, char **argv)
                 //Add packet number and CRC information to packet
                 finalize_packet(packet, msg_num++);
                 
-                for(int r = 0; r < repeat_count; r++) {
-                    transmit(packet);
-                }
+                transmit_avx(packet, repeat_count);
                 printf("packet sent!");
                 sched_yield();
             }
